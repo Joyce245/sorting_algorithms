@@ -1,49 +1,83 @@
 #include "sort.h"
-#include <stdio.h>
+
 /**
- * insertion_sort_list - insertion sort algorithm for doubly linked list
- * @list: pointer to array to sort
-*/
+ * _swap - Swaps two nodes of doubly linked list
+ *
+ * @node: node base to change
+ * @list: double link list head
+ *
+ * Return: No Return
+ */
+void _swap(listint_t **node, listint_t **list)
+{
+	listint_t *tmp = *node, *tmp2, *tmp3;
+
+	if (!(*node)->prev)
+		*list = (*node)->next;
+
+	tmp = tmp3 = *node;
+	tmp2 = tmp->next;
+
+	tmp->next = tmp2->next;
+	tmp3 = tmp->prev;
+	tmp->prev = tmp2;
+	tmp2->next = tmp;
+	tmp2->prev = tmp3;
+
+	if (tmp2->prev)
+		tmp2->prev->next = tmp2;
+
+
+	if (tmp->next)
+		tmp->next->prev = tmp;
+
+	*node = tmp2;
+
+}
+/**
+ * insertion_sort_list - sorts a doubly linked list of integers
+ * in ascending order using the Insertion sort algorithm
+ *
+ * @list: doubly linked list
+ *
+ * Return: No Return
+ */
 void insertion_sort_list(listint_t **list)
 {
+	listint_t  *head, *tback, *aux;
 
-listint_t *node, *tmp, *next, *tmp_next, *tmp_prev;
-int i = 0;
+	if (!list || !(*list) || (!((*list)->prev) && !((*list)->next)))
+		return;
 
-if (list == NULL || (*list)->next == NULL)
-	return;
-node = *list;
-node = node->next;
-while (node != NULL)
-{
-	tmp = node;
-	next = node->next;
-	tmp_next = tmp->next; /*Will be NULL for the last Node*/
-	tmp_prev = tmp->prev;
-
-	while (tmp->prev != NULL && tmp_prev->n > tmp->n)
+	head = *list;
+	while (head && head->next)
 	{
-		if (tmp_next != NULL)
-			tmp_next->prev = tmp_prev;
-		tmp_prev->next = tmp_next;
-		if (tmp_prev->prev == NULL)
+		if (head->n > head->next->n)
 		{
-			tmp_prev->prev = tmp;
-			*list = tmp;
-			tmp->prev = NULL;
+			aux = head;
+
+			_swap(&aux, list);
+			print_list(*list);
+			head = aux;
+			tback = aux;
+
+			while (tback && tback->prev)
+			{
+
+				if (tback->n < tback->prev->n)
+				{
+					aux = tback->prev;
+
+					_swap(&(aux), list);
+
+					print_list(*list);
+					tback = aux->next;
+				}
+
+				tback = tback->prev;
+			}
+
 		}
-		else
-		{
-			tmp->prev = tmp_prev->prev;
-			tmp_prev->prev->next = tmp;
-			tmp_prev->prev = tmp;
-		}
-		tmp->next = tmp_prev;
-		tmp_prev = tmp->prev;
-		tmp_next = tmp->next;
-		print_list(*list);
+		head = head->next;
 	}
-	node = next;
-	i++;
-}
 }
